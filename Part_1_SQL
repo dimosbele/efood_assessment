@@ -1,0 +1,104 @@
+-- Contact info:
+-- Dimosthenis Beleveslis
+-- d.beleveslis@gmail.com
+
+
+-- Query #1
+
+SELECT t1.city, t1.breakfast_basket, t2.efood_basket, t3.breakfast_freq, t4.efood_freq, t7.N12/t5.N11 as breakfast_users3freq_perc, t10.N22/t8.N21 as efood_users3freq_perc  FROM 
+        # subquery for 'breakfast_basket' column
+        (SELECT city, SUM(amount)/COUNT(order_id) AS breakfast_basket
+        FROM `efood2022-360512.main_assessment.orders`
+        WHERE cuisine = 'Breakfast'
+        GROUP BY city) t1
+        INNER JOIN
+        # subquery for 'efood_basket' column
+        (SELECT city, SUM(amount)/COUNT(order_id) AS efood_basket
+        FROM `efood2022-360512.main_assessment.orders`
+        GROUP BY city) t2
+        ON t1.city = t2.city
+        INNER JOIN
+        # subquery for 'breakfast_freq' column
+        (SELECT city, COUNT(order_id)/COUNT(DISTINCT user_id) AS breakfast_freq
+        FROM `efood2022-360512.main_assessment.orders`
+        WHERE cuisine = 'Breakfast'
+        GROUP BY city) t3
+        ON t1.city = t3.city
+        INNER JOIN
+        # subquery for 'efood_freq' column
+        (SELECT city, COUNT(order_id)/COUNT(DISTINCT user_id) AS efood_freq
+        FROM `efood2022-360512.main_assessment.orders`
+        GROUP BY city) t4
+        ON t1.city = t4.city
+        INNER JOIN
+        # subqueries for 'breakfast_users3freq_perc' column
+        (SELECT city, COUNT(DISTINCT user_id) AS N11 FROM `efood2022-360512.main_assessment.orders`
+        WHERE cuisine = 'Breakfast' 
+        GROUP BY city) t5
+        ON t1.city = t5.city
+        INNER JOIN
+        (
+        SELECT t6.city, COUNT(DISTINCT t6.user_id) AS N12 FROM
+                (
+                SELECT city, user_id, COUNT(*)
+                FROM `efood2022-360512.main_assessment.orders`
+                WHERE cuisine = 'Breakfast'
+                GROUP BY city, user_id
+                HAVING COUNT(*) > 3
+                ) t6
+        GROUP BY t6.city
+        ) t7
+        ON t1.city = t7.city
+        INNER JOIN
+        # subqueries for 'efood_users3freq_perc' column
+        (SELECT city, COUNT(DISTINCT user_id) AS N21 FROM `efood2022-360512.main_assessment.orders` 
+        GROUP BY city) t8
+        ON t1.city = t8.city
+        INNER JOIN
+        (
+        SELECT t9.city, COUNT(DISTINCT t9.user_id) AS N22 FROM
+                (
+                SELECT city, user_id, COUNT(*)
+                FROM `efood2022-360512.main_assessment.orders`
+                GROUP BY city, user_id
+                HAVING COUNT(*) > 3
+                ) t9
+        GROUP BY t9.city
+        ) t10
+        ON t1.city = t10.city
+        INNER JOIN
+        # subquery for keeping the 5 cities with the most Breakfast Orders
+        (SELECT city, COUNT(order_id) AS N_Breakfast_orders FROM `efood2022-360512.main_assessment.orders`
+        WHERE cuisine = 'Breakfast'
+        GROUP BY city) t11
+ON t1.city = t11.city
+ORDER BY t11.N_Breakfast_orders DESC
+LIMIT 5;
+
+
+
+
+
+-- Query #2
+
+SELECT t1.city, t1.N_orders, t3.Top10_N_orders, 100*(t3.Top10_N_orders/t1.N_orders) AS Perc FROM
+        (
+        SELECT city, COUNT(order_id) AS N_orders FROM `efood2022-360512.main_assessment.orders`
+        GROUP BY city
+        ) t1
+        INNER JOIN
+        (
+        SELECT city, SUM(cnt) AS Top10_N_orders FROM (
+                SELECT city, user_id, t2.cnt, ROW_NUMBER() OVER (PARTITION BY city ORDER BY t2.cnt DESC) as country_rank FROM
+                        (SELECT city, user_id, COUNT(order_id) AS cnt FROM `efood2022-360512.main_assessment.orders`
+                        GROUP BY city, user_id) t2
+                ORDER BY city DESC, t2.cnt DESC) t3
+        WHERE t3.country_rank <= 10
+        GROUP BY city
+        ) t3
+        ON t1.city = t3.city
+ORDER BY Perc;
+
+
+
+
