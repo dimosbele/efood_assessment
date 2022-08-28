@@ -1,2 +1,2 @@
 # efood_assessment
-This is a repository for the SQL assingment of the assessment for efood.
+This is a repository for the the assessment for efood.
