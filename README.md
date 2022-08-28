@@ -1,7 +1,7 @@
 # efood_assessment
 This is a repository for the the assessment for efood. <br>
 
-In the above repository you will find the files:
+In this repository you will find the files:
 <li> <b>Part_1_SQL</b> - The 2 SQL queries for Part 1.</li>
 Running the 2 SQL queries in BigQuery platform should result the desired SQL tables.To run these 2 SQL queries, you should install BigQuery with a gmail account and download the orders.csv file. <br><br>
 
