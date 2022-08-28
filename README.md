@@ -9,7 +9,7 @@ Running the 2 SQL queries in BigQuery platform should result the desired SQL ta
 To run this file you should have Jupyter & Python installed in your computer. You can install anaconda that includes both Jupyter & Python by following the instructions here https://docs.anaconda.com/anaconda/install/windows/
 I have used Python 3.7.7
 
-
--- Contact info:
--- Dimosthenis Beleveslis
--- d.beleveslis@gmail.com
+<br><br>
+-- <b>Contact info</b>:<br>
+-- Dimosthenis Beleveslis<br>
+-- d.beleveslis@gmail.com<br>
